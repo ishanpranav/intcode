@@ -41,8 +41,8 @@ test_emulator: test/emulator.c emulator parser
 day02a: src/day02a.c emulator parser
 	$(CC) $(CFLAGS) $< -o $@.o emulator.o parser.o
 	
-day02b: src/day02b.c
-	$(CC) $(CFLAGS) $< -o $@.o
+day02b: src/day02b.c emulator parser
+	$(CC) $(CFLAGS) $< -o $@.o emulator.o parser.o
 	
 day03a: src/day03a.c
 	$(CC) $(CFLAGS) $< -o $@.o

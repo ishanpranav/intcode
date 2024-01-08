@@ -7,7 +7,7 @@
 #define EXCEPTION_IO "Error: I/O.\n"
 #define MEMORY 10000
 
-int main(int count, String args[])
+int main(int count, ZString args[])
 {
     if (count < 3)
     {

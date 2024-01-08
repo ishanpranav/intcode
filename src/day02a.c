@@ -1,6 +1,6 @@
 // Licensed under the MIT license.
 
-// 1202 Program Alarm
+// 1202 Program Alarm Part 1
 
 #include <stdio.h>
 #include <time.h>
