@@ -1,10 +1,10 @@
 CC = gcc
 CFLAGS = -O3 -pedantic -std=c99 -Wall -Wextra
+TESTFLAGS = -O0 -pedantic -std=c99 -Wall -Wextra -g
 LIBM = -lm
 TWOS_COMPLEMENT = -fno-strict-overflow -fwrapv
 
 all: \
-	day01a day01b \
 	day02a day02b \
 	day03a day03b \
 	day04a day04b \
@@ -28,15 +28,18 @@ all: \
 	day22a day22b \
 	day24a day24b \
 	day25z
-	
-day01a: src/day01a.c
-	$(CC) $(CFLAGS) $< -o $@.o
-	
-day01b: src/day01b.c
-	$(CC) $(CFLAGS) $< -o $@.o
 
-day02a: src/day02a.c
-	$(CC) $(CFLAGS) $< -o $@.o
+emulator: lib/emulator.h lib/emulator.c
+	$(CC) $(CFLAGS) -c lib/emulator.c -o emulator.o
+
+parser: lib/parser.h lib/parser.c
+	$(CC) $(CFLAGS) -c lib/parser.c -o parser.o
+	
+test_emulator: test/emulator.c emulator parser
+	$(CC) $(TESTFLAGS) $< -o test_emulator.o emulator.o parser.o
+
+day02a: src/day02a.c emulator parser
+	$(CC) $(CFLAGS) $< -o $@.o emulator.o parser.o
 	
 day02b: src/day02b.c
 	$(CC) $(CFLAGS) $< -o $@.o
