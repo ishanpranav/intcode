@@ -67,11 +67,7 @@ void emulator_execute(Emulator instance)
             {
                 Word* result = instance->memory + instruction[1];
 
-                if (scanf(WORD_FORMAT, result) != 1)
-                {
-                    return;
-                }
-
+                *result = instance->input();
                 instruction += 2;
             }
             break;
@@ -80,8 +76,7 @@ void emulator_execute(Emulator instance)
             {
                 Word value = emulator_load(instance, instruction, 1);
 
-                printf(WORD_FORMAT "\n", value);
-
+                instance->ouput(value);
                 instruction += 2;
             }
             break;

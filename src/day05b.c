@@ -1,6 +1,6 @@
 // Licensed under the MIT license.
 
-// Sunny with a Chance of Asteroids Part 1
+// Sunny with a Chance of Asteroids Part 2
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -2,9 +2,10 @@
 
 struct Emulator
 {
-    FILE* input;
-    FILE* output;
-    Word* memory;
+    long* memory;
+
+    long (*input)(void);
+    void (*ouput)(long value);
 };
 
 typedef struct Emulator* Emulator;
