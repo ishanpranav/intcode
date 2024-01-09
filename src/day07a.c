@@ -5,7 +5,6 @@
 // Amplification Circuit Part 1
 
 #include <string.h>
-#include <time.h>
 #include "../lib/emulator.h"
 #include "../lib/parser.h"
 #include "../lib/permutation_iterator.h"
@@ -23,7 +22,6 @@ int main()
     struct PermutationIterator iter;
     struct Emulator amplifiers[5];
     int set[] = { 0, 1, 2, 3, 4 };
-    clock_t start = clock();
     int size = parser_parse(stdin, image);
 
     for (int i = 0; i < 5; i++)
@@ -53,10 +51,7 @@ int main()
         }
     }
 
-    printf(
-        "07a " WORD_FORMAT " %lf\n",
-        max,
-        (double)(clock() - start) / CLOCKS_PER_SEC);
+    printf("07a " WORD_FORMAT "\n", max);
 
     return 0;
 }

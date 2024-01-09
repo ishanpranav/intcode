@@ -4,7 +4,6 @@
 
 // 1202 Program Alarm Part 2
 
-#include <time.h>
 #include "../lib/emulator.h"
 #include "../lib/parser.h"
 #define MEMORY 256
@@ -40,13 +39,9 @@ static Word scan(Word image[], int imageSize)
 int main(void)
 {
     Word image[MEMORY];
-    clock_t start = clock();
     Word product = scan(image, parser_parse(stdin, image));
 
-    printf(
-        "02b " WORD_FORMAT " %lf\n",
-        product,
-        (double)(clock() - start) / CLOCKS_PER_SEC);
+    printf("02b " WORD_FORMAT "\n", product);
 
     return 0;
 }

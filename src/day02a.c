@@ -4,7 +4,6 @@
 
 // 1202 Program Alarm Part 1
 
-#include <time.h>
 #include "../lib/emulator.h"
 #include "../lib/parser.h"
 #define MEMORY 256
@@ -13,7 +12,6 @@ int main(void)
 {
     Word memory[MEMORY];
     struct Emulator processor;
-    clock_t start = clock();
 
     parser_parse(stdin, memory);
     
@@ -22,10 +20,7 @@ int main(void)
 
     emulator(&processor, memory);
     emulator_execute(&processor);
-    printf(
-        "02a " WORD_FORMAT " %lf\n",
-        memory[0],
-        (double)(clock() - start) / CLOCKS_PER_SEC);
+    printf("02a " WORD_FORMAT "\n", memory[0]);
 
     return 0;
 }

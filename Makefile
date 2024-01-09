@@ -6,9 +6,8 @@ all: \
 	emulate \
 	intcode \
 	day02a day02b \
-	day05a day05b \
 	day07a day07b \
-	day09a day09b \
+	day09b \
 	day10a \
 	day11a day11b \
 	day12a day12b \
@@ -46,20 +45,11 @@ day02a: src/day02a.c emulator parser
 day02b: src/day02b.c emulator parser
 	$(CC) $(CFLAGS) $< -o $@.o emulator.o parser.o
 	
-day05a: src/day05a.c emulator parser
-	$(CC) $(CFLAGS) $< -o $@.o emulator.o parser.o
-	
-day05b: src/day05b.c emulator parser
-	$(CC) $(CFLAGS) $< -o $@.o emulator.o parser.o
-	
 day07a: src/day07a.c emulator parser permutation_iterator
 	$(CC) $(CFLAGS) $< -o $@.o emulator.o parser.o permutation_iterator.o
 	
 day07b: src/day07b.c emulator parser permutation_iterator
 	$(CC) $(CFLAGS) $< -o $@.o emulator.o parser.o permutation_iterator.o
-	
-day09a: src/day09a.c
-	$(CC) $(CFLAGS) $< -o $@.o $(LIBM)
 	
 day09b: src/day09b.c
 	$(CC) $(CFLAGS) $< -o $@.o $(LIBM)

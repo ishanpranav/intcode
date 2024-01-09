@@ -84,7 +84,6 @@ int main()
     struct PermutationIterator iter;
     struct Emulator amplifiers[5];
     int set[] = { 5, 6, 7, 8, 9 };
-    clock_t start = clock();
     int imageSize = parser_parse(stdin, image);
 
     for (int i = 0; i < 5; i++)
@@ -127,10 +126,7 @@ int main()
         }
     }
 
-    printf(
-        "07b " WORD_FORMAT " %lf\n",
-        max,
-        (double)(clock() - start) / CLOCKS_PER_SEC);
+    printf("07b " WORD_FORMAT "\n", max);
 
     return 0;
 }
