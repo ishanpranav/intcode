@@ -8,7 +8,6 @@ all: \
 	day02a day02b \
 	day05a day05b \
 	day07a day07b \
-	day08a day08b \
 	day09a day09b \
 	day10a \
 	day11a day11b \
@@ -31,12 +30,15 @@ emulator: lib/emulator.h lib/emulator.c
 
 parser: lib/parser.h lib/parser.c
 	$(CC) $(CFLAGS) -c lib/parser.c -o parser.o
-	
+
 emulate: tools/emulate.c emulator parser
 	$(CC) $(CFLAGS) $< -o emulate.o emulator.o parser.o
 
 intcode: tools/intcode.c emulator parser
 	$(CC) $(CFLAGS) $< -o intcode.o emulator.o parser.o
+
+permutation_iterator: lib/permutation_iterator.h lib/permutation_iterator.c
+	$(CC) $(CFLAGS) -c lib/permutation_iterator.c -o permutation_iterator.o
 
 day02a: src/day02a.c emulator parser
 	$(CC) $(CFLAGS) $< -o $@.o emulator.o parser.o
@@ -50,17 +52,11 @@ day05a: src/day05a.c emulator parser
 day05b: src/day05b.c emulator parser
 	$(CC) $(CFLAGS) $< -o $@.o emulator.o parser.o
 	
-day07a: src/day07a.c emulator parser
-	$(CC) $(CFLAGS) $< -o $@.o emulator.o parser.o
+day07a: src/day07a.c emulator parser permutation_iterator
+	$(CC) $(CFLAGS) $< -o $@.o emulator.o parser.o permutation_iterator.o
 	
-day07b: src/day07b.c emulator parser
-	$(CC) $(CFLAGS) $< -o $@.o emulator.o parser.o
-	
-day08a: src/day08a.c
-	$(CC) $(CFLAGS) $< -o $@.o
-	
-day08b: src/day08b.c
-	$(CC) $(CFLAGS) $< -o $@.o
+day07b: src/day07b.c emulator parser permutation_iterator
+	$(CC) $(CFLAGS) $< -o $@.o emulator.o parser.o permutation_iterator.o
 	
 day09a: src/day09a.c
 	$(CC) $(CFLAGS) $< -o $@.o $(LIBM)

@@ -4,7 +4,6 @@
 
 // Sunny with a Chance of Asteroids Part 1
 
-#include <stdlib.h>
 #include <time.h>
 #include "../lib/emulator.h"
 #include "../lib/parser.h"

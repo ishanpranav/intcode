@@ -4,72 +4,14 @@
 
 // Amplification Circuit Part 1
 
-#include <stdbool.h>
-#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include "../lib/emulator.h"
 #include "../lib/parser.h"
+#include "../lib/permutation_iterator.h"
 #define INPUTS 2
 #define MEMORY 4096
 #define OUTPUTS 1
-
-struct PermutationIterator
-{
-    int* values;
-    int length;
-    bool end;
-};
-
-typedef struct PermutationIterator* PermutationIterator;
-
-static void swap(int* p, int* q)
-{
-    int swap = *p;
-
-    *p = *q;
-    *q = swap;
-}
-
-void permutation_begin(int* values, int length, PermutationIterator iter)
-{
-    iter->end = false;
-    iter->length = length;
-    iter->values = values;
-}
-
-void permutation_next(PermutationIterator iter)
-{
-    int last = iter->length - 1;
-
-    while (last > 0 && iter->values[last - 1] >= iter->values[last])
-    {
-        last--;
-    }
-
-    if (last > 0)
-    {
-        int index = iter->length - 1;
-
-        while (index > last && iter->values[index] <= iter->values[last - 1])
-        {
-            index--;
-        }
-
-        swap(iter->values + last - 1, iter->values + index);
-    }
-
-    int max = (iter->length - last) / 2;
-
-    for (int index = 0; index < max; index++)
-    {
-        swap(
-            iter->values + last + index,
-            iter->values + iter->length - 1 - index);
-    }
-
-    iter->end = !last;
-}
 
 int main()
 {
