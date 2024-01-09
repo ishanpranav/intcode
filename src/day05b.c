@@ -7,13 +7,13 @@
 #include <time.h>
 #include "../lib/emulator.h"
 #include "../lib/parser.h"
-#define MEMORY 100000
+#define MEMORY 4096
 
 Word result;
 
 static Word emulator_on_input()
 {
-    return 1;
+    return 5;
 }
 
 static void emulator_on_output(Word value)
@@ -35,7 +35,7 @@ int main()
     parser_parse(stdin, memory);
     emulator_execute(&emulator);
     printf(
-        "05a " WORD_FORMAT " %lf\n",
+        "05b " WORD_FORMAT " %lf\n",
         result,
         (double)(clock() - start) / CLOCKS_PER_SEC);
 

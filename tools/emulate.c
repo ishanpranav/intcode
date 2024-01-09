@@ -11,7 +11,7 @@ int main(int count, ZString args[])
 {
     if (count < 3)
     {
-        printf("Usage: emulator <program> <dump>\n");
+        printf("Usage: emulate <program> <dump>\n");
 
         return 1;
     }
@@ -43,7 +43,12 @@ int main(int count, ZString args[])
         return 1;
     }
 
-    emulator_execute(programMemory);
+    struct Emulator emulator =
+    {
+        .memory = programMemory
+    };
+
+    emulator_execute(&emulator);
 
     int compare = memcmp(programMemory, dumpMemory, programSize * sizeof(int));
 

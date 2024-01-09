@@ -7,10 +7,19 @@ enum Opcode
     OPCODE_MULTIPLY = 2,
     OPCODE_INPUT = 3,
     OPCODE_OUTPUT = 4,
+    OPCODE_JUMP_IF_TRUE = 5,
+    OPCODE_JUMP_IF_FALSE = 6,
+    OPCODE_LESS_THAN = 7,
+    OPCODE_EQUALS = 8,
     OPCODE_TERMINATE = 99
 };
 
 typedef enum Opcode Opcode;
+
+void emulator_move(Emulator instance, Word* instruction, Word result, int slot)
+{
+    instance->memory[instruction[slot]] = result;
+}
 
 Word emulator_load(Emulator instance, Word* instruction, int slot)
 {
@@ -45,9 +54,9 @@ void emulator_execute(Emulator instance)
             {
                 Word a = emulator_load(instance, instruction, 1);
                 Word b = emulator_load(instance, instruction, 2);
-                Word* result = instance->memory + instruction[3];
 
-                *result = a + b;
+                emulator_move(instance, instruction, a + b, 3);
+
                 instruction += 4;
             }
             break;
@@ -56,28 +65,73 @@ void emulator_execute(Emulator instance)
             {
                 Word a = emulator_load(instance, instruction, 1);
                 Word b = emulator_load(instance, instruction, 2);
-                Word* result = instance->memory + instruction[3];
 
-                *result = a * b;
+                emulator_move(instance, instruction, a * b, 3);
+
                 instruction += 4;
             }
             break;
 
             case OPCODE_INPUT:
             {
-                Word* result = instance->memory + instruction[1];
+                emulator_move(instance, instruction, instance->input(), 1);
 
-                *result = instance->input();
                 instruction += 2;
             }
             break;
 
             case OPCODE_OUTPUT:
             {
-                Word value = emulator_load(instance, instruction, 1);
-
-                instance->ouput(value);
+                instance->ouput(emulator_load(instance, instruction, 1));
                 instruction += 2;
+            }
+            break;
+
+            case OPCODE_JUMP_IF_TRUE:
+                if (emulator_load(instance, instruction, 1))
+                {
+                    Word label = emulator_load(instance, instruction, 2);
+
+                    instruction = instance->memory + label;
+
+                    break;
+                }
+
+                instruction += 3;
+                break;
+
+            case OPCODE_JUMP_IF_FALSE:
+                if (!emulator_load(instance, instruction, 1))
+                {
+                    Word label = emulator_load(instance, instruction, 2);
+
+                    instruction = instance->memory + label;
+
+                    break;
+                }
+
+                instruction += 3;
+                break;
+
+            case OPCODE_LESS_THAN:
+            {
+                Word a = emulator_load(instance, instruction, 1);
+                Word b = emulator_load(instance, instruction, 2);
+
+                emulator_move(instance, instruction, a < b, 3);
+
+                instruction += 4;
+            }
+            break;
+
+            case OPCODE_EQUALS:
+            {
+                Word a = emulator_load(instance, instruction, 1);
+                Word b = emulator_load(instance, instruction, 2);
+
+                emulator_move(instance, instruction, a == b, 3);
+
+                instruction += 4;
             }
             break;
 

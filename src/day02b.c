@@ -9,22 +9,26 @@
 #include "../lib/parser.h"
 #define MEMORY 256
 
-static Word scan(Word clean[], int length)
+static Word scan(Word image[], int length)
 {
     for (Word noun = 0; noun < 100; noun++)
     {
         for (Word verb = 0; verb < 100; verb++)
         {
-            Word dirty[MEMORY];
+            Word memory[MEMORY];
+            struct Emulator emulator =
+            {
+                .memory = memory
+            };
 
-            memcpy(dirty, clean, sizeof(Word) * length);
+            memcpy(memory, image, sizeof(Word) * length);
 
-            dirty[1] = noun;
-            dirty[2] = verb;
+            memory[1] = noun;
+            memory[2] = verb;
 
-            emulator_execute(dirty);
+            emulator_execute(&emulator);
 
-            if (dirty[0] == 19690720)
+            if (memory[0] == 19690720)
             {
                 return noun * 100 + verb;
             }
@@ -37,10 +41,6 @@ static Word scan(Word clean[], int length)
 int main(void)
 {
     Word memory[MEMORY];
-    struct Emulator emulator =
-    {
-        .memory = memory
-    };
     clock_t start = clock();
     Word product = scan(memory, parser_parse(stdin, memory));
 
