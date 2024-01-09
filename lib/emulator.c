@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 
 #include <stdio.h>
+#include <string.h>
 #include "emulator.h"
 
 enum Opcode
@@ -33,23 +34,20 @@ static void emulator_on_output(Emulator instance, Word word)
 void emulator(Emulator instance, Word memory[])
 {
     instance->memory = memory;
+    instance->instruction = instance->memory;
     instance->input = emulator_on_input;
     instance->output = emulator_on_output;
-    
+
     queue(&instance->inputs, NULL, 0);
     queue(&instance->outputs, NULL, 0);
 }
 
-static void emulator_move(
-    Emulator instance, 
-    Word* instruction, 
-    Word result, 
-    int slot)
+static void emulator_move(Emulator instance, Word result, int slot)
 {
-    instance->memory[instruction[slot]] = result;
+    instance->memory[instance->instruction[slot]] = result;
 }
 
-static Word emulator_load(Emulator instance, Word* instruction, int slot)
+static Word emulator_load(Emulator instance, int slot)
 {
     int denominator = 100;
 
@@ -58,9 +56,9 @@ static Word emulator_load(Emulator instance, Word* instruction, int slot)
         denominator *= 10;
     }
 
-    Word value = instruction[slot];
+    Word value = instance->instruction[slot];
 
-    if ((*instruction / denominator) % 10 == 0)
+    if ((*instance->instruction / denominator) % 10 == 0)
     {
         return instance->memory[value];
     }
@@ -68,35 +66,33 @@ static Word emulator_load(Emulator instance, Word* instruction, int slot)
     return value;
 }
 
-void emulator_execute(Emulator instance)
+bool emulator_execute(Emulator instance)
 {
-    Word* instruction = instance->memory;
-
     for (;;)
     {
-        Opcode opcode = *instruction % 100;
+        Opcode opcode = *instance->instruction % 100;
 
         switch (opcode)
         {
             case OPCODE_ADD:
             {
-                Word a = emulator_load(instance, instruction, 1);
-                Word b = emulator_load(instance, instruction, 2);
+                Word a = emulator_load(instance, 1);
+                Word b = emulator_load(instance, 2);
 
-                emulator_move(instance, instruction, a + b, 3);
+                emulator_move(instance, a + b, 3);
 
-                instruction += 4;
+                instance->instruction += 4;
             }
             break;
 
             case OPCODE_MULTIPLY:
             {
-                Word a = emulator_load(instance, instruction, 1);
-                Word b = emulator_load(instance, instruction, 2);
+                Word a = emulator_load(instance, 1);
+                Word b = emulator_load(instance, 2);
 
-                emulator_move(instance, instruction, a * b, 3);
+                emulator_move(instance, a * b, 3);
 
-                instruction += 4;
+                instance->instruction += 4;
             }
             break;
 
@@ -104,73 +100,86 @@ void emulator_execute(Emulator instance)
             {
                 Word input;
                 
-                instance->input(instance, &input);
-                emulator_move(instance, instruction, input, 1);
+                if (!instance->input(instance, &input))
+                {
+                    return false;
+                }
+                
+                emulator_move(instance, input, 1);
 
-                instruction += 2;
+                instance->instruction += 2;
             }
             break;
 
             case OPCODE_OUTPUT:
             {
-                Word output = emulator_load(instance, instruction, 1);
+                Word output = emulator_load(instance, 1);
 
                 instance->output(instance, output);
-                instruction += 2;
+                instance->instruction += 2;
             }
             break;
 
             case OPCODE_JUMP_IF_TRUE:
-                if (emulator_load(instance, instruction, 1))
+                if (emulator_load(instance, 1))
                 {
-                    Word label = emulator_load(instance, instruction, 2);
+                    Word label = emulator_load(instance, 2);
 
-                    instruction = instance->memory + label;
+                    instance->instruction = instance->memory + label;
 
                     break;
                 }
 
-                instruction += 3;
+                instance->instruction += 3;
                 break;
 
             case OPCODE_JUMP_IF_FALSE:
-                if (!emulator_load(instance, instruction, 1))
+                if (!emulator_load(instance, 1))
                 {
-                    Word label = emulator_load(instance, instruction, 2);
+                    Word label = emulator_load(instance, 2);
 
-                    instruction = instance->memory + label;
+                    instance->instruction = instance->memory + label;
 
                     break;
                 }
 
-                instruction += 3;
+                instance->instruction += 3;
                 break;
 
             case OPCODE_LESS_THAN:
             {
-                Word a = emulator_load(instance, instruction, 1);
-                Word b = emulator_load(instance, instruction, 2);
+                Word a = emulator_load(instance, 1);
+                Word b = emulator_load(instance, 2);
 
-                emulator_move(instance, instruction, a < b, 3);
+                emulator_move(instance, a < b, 3);
 
-                instruction += 4;
+                instance->instruction += 4;
             }
             break;
 
             case OPCODE_EQUALS:
             {
-                Word a = emulator_load(instance, instruction, 1);
-                Word b = emulator_load(instance, instruction, 2);
+                Word a = emulator_load(instance, 1);
+                Word b = emulator_load(instance, 2);
 
-                emulator_move(instance, instruction, a == b, 3);
+                emulator_move(instance, a == b, 3);
 
-                instruction += 4;
+                instance->instruction += 4;
             }
             break;
 
-            case OPCODE_TERMINATE: return;
+            case OPCODE_TERMINATE: return true;
         }
     }
+}
+
+void emulator_reimage(Emulator instance, Word image[], int imageSize)
+{
+    instance->instruction = instance->memory;
+
+    memcpy(instance->memory, image, imageSize * sizeof(Word));
+    queue_clear(&instance->inputs);
+    queue_clear(&instance->outputs);
 }
 
 void queue(Queue instance, Word buffer[], int capacity)
@@ -224,4 +233,10 @@ bool queue_try_dequeue(Queue instance, Word* result)
     }
 
     return true;
+}
+
+void queue_clear(Queue instance)
+{
+    instance->first = -1;
+    instance->last = -1;
 }

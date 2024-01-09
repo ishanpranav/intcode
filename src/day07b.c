@@ -2,7 +2,7 @@
 // Copyright (c) 2023 Ishan Pranav
 // Licensed under the MIT license.
 
-// Amplification Circuit Part 1
+// Amplification Circuit Part 2
 
 #include <stdbool.h>
 #include <stdlib.h>
@@ -10,9 +10,17 @@
 #include <time.h>
 #include "../lib/emulator.h"
 #include "../lib/parser.h"
+#define EMULATOR_QUEUE_CAPACITY 5
 #define INPUTS 2
 #define MEMORY 4096
-#define OUTPUTS 1
+#define OUTPUTS 100
+
+struct EmulatorQueue
+{
+    struct Emulator* items[EMULATOR_QUEUE_CAPACITY];
+    int first;
+    int last;
+};
 
 struct PermutationIterator
 {
@@ -21,6 +29,7 @@ struct PermutationIterator
     bool end;
 };
 
+typedef struct EmulatorQueue* EmulatorQueue;
 typedef struct PermutationIterator* PermutationIterator;
 
 static void swap(int* p, int* q)
@@ -71,6 +80,57 @@ void permutation_next(PermutationIterator iter)
     iter->end = !last;
 }
 
+void emulator_queue(EmulatorQueue instance)
+{
+    instance->first = -1;
+    instance->last = -1;
+}
+
+void emulator_queue_enqueue(EmulatorQueue instance, Emulator item)
+{
+    if (instance->first == -1)
+    {
+        instance->first = 0;
+        instance->last = 0;
+    }
+    else if (instance->first && instance->last == EMULATOR_QUEUE_CAPACITY - 1)
+    {
+        instance->last = 0;
+    }
+    else
+    {
+        instance->last++;
+    }
+
+    instance->items[instance->last] = item;
+}
+
+Emulator emulator_queue_dequeue(EmulatorQueue instance)
+{
+    if (instance->first == -1)
+    {
+        return NULL;
+    }
+
+    Emulator result = instance->items[instance->first];
+
+    if (instance->first == instance->last)
+    {
+        instance->first = -1;
+        instance->last = -1;
+    }
+    else if (instance->first == EMULATOR_QUEUE_CAPACITY - 1)
+    {
+        instance->first = 0;
+    }
+    else
+    {
+        instance->first++;
+    }
+
+    return result;
+}
+
 int main()
 {
     Word max = 0;
@@ -80,9 +140,9 @@ int main()
     Word outputs[5][OUTPUTS];
     struct PermutationIterator iter;
     struct Emulator amplifiers[5];
-    int set[] = { 0, 1, 2, 3, 4 };
+    int set[] = { 5, 6, 7, 8, 9 };
     clock_t start = clock();
-    int size = parser_parse(stdin, image);
+    int imageSize = parser_parse(stdin, image);
 
     for (int i = 0; i < 5; i++)
     {
@@ -94,15 +154,28 @@ int main()
     for (permutation_begin(set, 5, &iter); !iter.end; permutation_next(&iter))
     {
         Word output = 0;
+        Emulator current;
+        struct EmulatorQueue queue;
+
+        emulator_queue(&queue);
 
         for (int i = 0; i < 5; i++)
         {
-            emulator_reimage(amplifiers + i, image, size);
+            emulator_reimage(amplifiers + i, image, imageSize);
             queue_enqueue(&amplifiers[i].inputs, set[i]);
-            queue_enqueue(&amplifiers[i].inputs, output);
-            emulator_execute(amplifiers + i);
+            emulator_queue_enqueue(&queue, amplifiers + i);
+        }
 
-            output = amplifiers[i].outputs.items[amplifiers[i].outputs.first];
+        while ((current = emulator_queue_dequeue(&queue)))
+        {
+            queue_enqueue(&current->inputs, output);
+            
+            if (!emulator_execute(current))
+            {
+                emulator_queue_enqueue(&queue, current);
+            }
+
+            queue_try_dequeue(&current->outputs, &output);
         }
 
         if (output > max)
@@ -112,7 +185,7 @@ int main()
     }
 
     printf(
-        "07a " WORD_FORMAT " %lf\n",
+        "07b " WORD_FORMAT " %lf\n",
         max,
         (double)(clock() - start) / CLOCKS_PER_SEC);
 

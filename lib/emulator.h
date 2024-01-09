@@ -16,6 +16,7 @@ struct Queue
 struct Emulator
 {
     long* memory;
+    long* instruction;
 
     bool (*input)(struct Emulator* instance, long* result);
     void (*output)(struct Emulator* instance, long value);
@@ -28,8 +29,10 @@ typedef struct Emulator* Emulator;
 typedef struct Queue* Queue;
 
 void emulator(Emulator instance, Word memory[]);
-void emulator_execute(Emulator instance);
+bool emulator_execute(Emulator instance);
+void emulator_reimage(Emulator instance, Word image[], int imageSize);
 
 void queue(Queue instance, Word buffer[], int capacity);
 void queue_enqueue(Queue instance, Word item);
 bool queue_try_dequeue(Queue instance, Word* result);
+void queue_clear(Queue instance);

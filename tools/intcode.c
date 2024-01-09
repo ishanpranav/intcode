@@ -3,18 +3,11 @@
 #include "../lib/emulator.h"
 #define MEMORY 1048576
 
-Word emulator_on_input(Emulator instance)
+bool emulator_on_input(Emulator instance, Word* result)
 {
     printf(">> ");
 
-    Word result;
-
-    if (scanf(" " WORD_FORMAT, &result) != 1)
-    {
-        return 0;
-    }
-
-    return result;
+    return scanf(WORD_FORMAT, result) == 1;
 }
 
 void emulator_on_output(Emulator instance, Word value)

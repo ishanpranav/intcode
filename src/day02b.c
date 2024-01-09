@@ -4,27 +4,27 @@
 
 // 1202 Program Alarm Part 2
 
-#include <string.h>
 #include <time.h>
 #include "../lib/emulator.h"
 #include "../lib/parser.h"
 #define MEMORY 256
 
-static Word scan(Word image[], int length)
+static Word scan(Word image[], int imageSize)
 {
+    Word memory[MEMORY];
+    struct Emulator processor;
+    
+    emulator(&processor, memory);
+
     for (Word noun = 0; noun < 100; noun++)
     {
         for (Word verb = 0; verb < 100; verb++)
         {
-            Word memory[MEMORY];
-            struct Emulator processor;
-
-            memcpy(memory, image, sizeof(Word) * length);
+            emulator_reimage(&processor, image, imageSize);
 
             memory[1] = noun;
             memory[2] = verb;
 
-            emulator(&processor, memory);
             emulator_execute(&processor);
 
             if (memory[0] == 19690720)

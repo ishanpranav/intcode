@@ -7,15 +7,15 @@
 int parser_parse(FILE* stream, Word memory[])
 {
     Word word;
-    int count = 0;
+    int size = 0;
 
     while (fscanf(stream, WORD_FORMAT ", ", &word) == 1)
     {
-        memory[count] = word;
-        count++;
+        memory[size] = word;
+        size++;
     }
 
-    return count;
+    return size;
 }
 
 int parser_parse_file(ZString path, Word memory[])
@@ -27,12 +27,12 @@ int parser_parse_file(ZString path, Word memory[])
         return 0;
     }
 
-    int count = parser_parse(stream, memory);
+    int size = parser_parse(stream, memory);
 
     if (fclose(stream) == EOF)
     {
         return 0;
     }
 
-    return count;
+    return size;
 }

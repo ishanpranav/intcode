@@ -53,8 +53,8 @@ day05b: src/day05b.c emulator parser
 day07a: src/day07a.c emulator parser
 	$(CC) $(CFLAGS) $< -o $@.o emulator.o parser.o
 	
-day07b: src/day07b.c
-	$(CC) $(CFLAGS) $< -o $@.o
+day07b: src/day07b.c emulator parser
+	$(CC) $(CFLAGS) $< -o $@.o emulator.o parser.o
 	
 day08a: src/day08a.c
 	$(CC) $(CFLAGS) $< -o $@.o

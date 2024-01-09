@@ -16,9 +16,9 @@ int main(int count, ZString args[])
         return 1;
     }
 
-    Word programMemory[MEMORY];
-    Word dumpMemory[MEMORY];
-    int programSize = parser_parse_file(args[1], programMemory);
+    Word dump[MEMORY];
+    Word memory[MEMORY];
+    int programSize = parser_parse_file(args[1], memory);
 
     if (!programSize)
     {
@@ -27,7 +27,7 @@ int main(int count, ZString args[])
         return 1;
     }
 
-    int dumpSize = parser_parse_file(args[2], dumpMemory);
+    int dumpSize = parser_parse_file(args[2], dump);
 
     if (!dumpSize)
     {
@@ -43,14 +43,12 @@ int main(int count, ZString args[])
         return 1;
     }
 
-    struct Emulator emulator =
-    {
-        .memory = programMemory
-    };
+    struct Emulator processor;
 
-    emulator_execute(&emulator);
+    emulator(&processor, memory);
+    emulator_execute(&processor);
 
-    int compare = memcmp(programMemory, dumpMemory, programSize * sizeof(int));
+    int compare = memcmp(memory, dump, programSize * sizeof(Word));
 
     assert(compare == 0);
 
