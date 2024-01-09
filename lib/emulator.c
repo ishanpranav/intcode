@@ -20,12 +20,58 @@ enum Opcode
 
 typedef enum Opcode Opcode;
 
-void emulator_move(Emulator instance, Word* instruction, Word result, int slot)
+static Word emulator_on_input(Emulator instance)
+{
+    if (instance->firstInput == -1)
+    {
+        return 0;
+    }
+
+    Word result = instance->inputs[instance->firstInput];
+
+    if (instance->firstInput == instance->lastInput)
+    {
+        instance->firstInput = -1;
+        instance->lastInput = -1;
+    }
+    else if (instance->firstInput == EMULATOR_INPUTS_CAPACITY - 1)
+    {
+        instance->firstInput = 0;
+    }
+    else
+    {
+        instance->firstInput++;
+    }
+
+    return result;
+}
+
+static void emulator_on_output(Emulator instance, Word word)
+{
+    instance->outputs[instance->outputCount] = word;
+    instance->outputCount++;
+}
+
+void emulator(Emulator instance, Word memory[])
+{
+    instance->memory = memory;
+    instance->input = emulator_on_input;
+    instance->output = emulator_on_output;
+    instance->firstInput = -1;
+    instance->firstInput = -1;
+    instance->outputCount = 0;
+}
+
+static void emulator_move(
+    Emulator instance, 
+    Word* instruction, 
+    Word result, 
+    int slot)
 {
     instance->memory[instruction[slot]] = result;
 }
 
-Word emulator_load(Emulator instance, Word* instruction, int slot)
+static Word emulator_load(Emulator instance, Word* instruction, int slot)
 {
     int denominator = 100;
 
@@ -42,6 +88,26 @@ Word emulator_load(Emulator instance, Word* instruction, int slot)
     }
 
     return value;
+}
+
+void emulator_input(Emulator instance, Word value)
+{
+    if (instance->firstInput == -1)
+    {
+        instance->firstInput = 0;
+        instance->lastInput = 0;
+    }
+    else if (instance->firstInput && 
+        instance->lastInput == EMULATOR_INPUTS_CAPACITY - 1)
+    {
+        instance->lastInput = 0;
+    }
+    else
+    {
+        instance->lastInput++;
+    }
+
+    instance->inputs[instance->lastInput] = value;
 }
 
 void emulator_execute(Emulator instance)
@@ -78,7 +144,9 @@ void emulator_execute(Emulator instance)
 
             case OPCODE_INPUT:
             {
-                emulator_move(instance, instruction, instance->input(), 1);
+                Word input = instance->input(instance);
+
+                emulator_move(instance, instruction, input, 1);
 
                 instruction += 2;
             }
@@ -86,7 +154,9 @@ void emulator_execute(Emulator instance)
 
             case OPCODE_OUTPUT:
             {
-                instance->ouput(emulator_load(instance, instruction, 1));
+                Word output = emulator_load(instance, instruction, 1);
+
+                instance->output(instance, output);
                 instruction += 2;
             }
             break;

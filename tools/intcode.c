@@ -3,7 +3,7 @@
 #include "../lib/emulator.h"
 #define MEMORY 1048576
 
-Word emulator_on_input()
+Word emulator_on_input(Emulator instance)
 {
     printf(">> ");
 
@@ -17,7 +17,7 @@ Word emulator_on_input()
     return result;
 }
 
-void emulator_on_output(Word value)
+void emulator_on_output(Emulator instance, Word value)
 {
     printf("> " WORD_FORMAT "\n", value);
 }
@@ -49,14 +49,14 @@ int main(int count, ZString args[])
         return 1;
     }
 
-    struct Emulator emulator =
-    {
-        .input = emulator_on_input,
-        .ouput = emulator_on_output,
-        .memory = memory
-    };
+    struct Emulator processor;
 
-    emulator_execute(&emulator);
+    emulator(&processor, memory);
+
+    processor.input = emulator_on_input;
+    processor.output = emulator_on_output;;
+
+    emulator_execute(&processor);
     free(memory);
     printf("Ok.\n");
 

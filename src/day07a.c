@@ -12,109 +12,102 @@
 #include "../lib/parser.h"
 #define MEMORY 4096
 
-Word result;
+struct PermutationIterator
+{
+    int* values;
+    int length;
+    bool end;
+};
+
+typedef struct PermutationIterator* PermutationIterator;
 
 static void swap(int* p, int* q)
 {
-    int temp = *p;
+    int swap = *p;
 
     *p = *q;
-    *q = temp;
+    *q = swap;
 }
 
-void math_permute5(int* set, void (*process)(int* set))
+void permutation_begin(int* values, int length, PermutationIterator iter)
 {
-    int i = 0;
-    int indexes[5] = { 0 };
+    iter->end = false;
+    iter->length = length;
+    iter->values = values;
+}
 
-    process(set);
+void permutation_next(PermutationIterator iter)
+{
+    int last = iter->length - 1;
 
-    while (i < 5)
+    while (last > 0 && iter->values[last - 1] >= iter->values[last])
     {
-        if (indexes[i] < i)
-        {
-            if (i % 2 == 1)
-            {
-                swap(set + i, set + indexes[i]);
-            }
-            else
-            {
-                swap(set + i, set);
-            }
-
-            process(set);
-
-            indexes[i]++;
-            i = 1;
-        }
-        else
-        {
-            indexes[i++] = 0;
-        }
+        last--;
     }
-}
 
-struct Permutation5Iterator
-{
-    int* next;
-    int current[5];
-    int directions[5];
-};
+    if (last > 0)
+    {
+        int index = iter->length - 1;
 
-typedef struct Permutation5Iterator* Permutation5Iterator;
+        while (index > last && iter->values[index] <= iter->values[last - 1])
+        {
+            index--;
+        }
 
-static Word emulator_on_input()
-{
-    return 5;
-}
+        swap(iter->values + last - 1, iter->values + index);
+    }
 
-static void emulator_on_output(Word value)
-{
-    result = value;
-}
+    int max = (iter->length - last) / 2;
 
-void prints(int* l)
-{
-    printf("%d %d %d %d %d\n", l[0], l[1], l[2], l[3], l[4]);
+    for (int index = 0; index < max; index++)
+    {
+        swap(
+            iter->values + last + index,
+            iter->values + iter->length - 1 - index);
+    }
+
+    iter->end = !last;
 }
 
 int main()
 {
-    int set[] = { 0, 1, 2, 3, 4 };
-    int indexes[5] = { 0 };
-
-    Iterator iter;
-    iter_begin(set, &iter, indexes, 5);
-
-    while (!iter_end(&iter)) {
-        prints(iter.current);
-        iter_next(&iter);
-    }
-
+    Word max = 0;
     Word programMemory[MEMORY];
     Word sharedMemory[5][MEMORY];
+    struct PermutationIterator iter;
+    struct Emulator amplifiers[5];
+    int set[] = { 0, 1, 2, 3, 4 };
     clock_t start = clock();
     int length = parser_parse(stdin, programMemory);
 
-    struct Emulator emulators[5];
-
-    for (int i = 0; i < 5; i++)
+    for (permutation_begin(set, 5, &iter); !iter.end; permutation_next(&iter))
     {
-        emulators[i].input = emulator_on_input;
-        emulators[i].ouput = emulator_on_output;
-        emulators[i].memory = sharedMemory[i];
-    }
+        for (int i = 0; i < 5; i++)
+        {
+            memcpy(sharedMemory[i], programMemory, length * sizeof(Word));
+            emulator(amplifiers + i, sharedMemory[i]);
+        }
 
-    math_permute5(set, prints);
+        Word output = 0;
 
-    for (int i = 0; i < 5; i++)
-    {
-        memcpy(sharedMemory, programMemory, length * sizeof(Word));
+        for (int i = 0; i < 5; i++)
+        {
+            emulator_input(amplifiers + i, set[i]);
+            emulator_input(amplifiers + i, output);
+            emulator_execute(amplifiers + i);
+
+            output = amplifiers[i].outputs[0];
+        }
+
+        if (output > max)
+        {
+            max = output;
+        }
     }
 
     printf(
         "05b " WORD_FORMAT " %lf\n",
-        result,
+        max,
         (double)(clock() - start) / CLOCKS_PER_SEC);
 
     return 0;

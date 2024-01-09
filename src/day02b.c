@@ -17,17 +17,15 @@ static Word scan(Word image[], int length)
         for (Word verb = 0; verb < 100; verb++)
         {
             Word memory[MEMORY];
-            struct Emulator emulator =
-            {
-                .memory = memory
-            };
+            struct Emulator processor;
 
             memcpy(memory, image, sizeof(Word) * length);
 
             memory[1] = noun;
             memory[2] = verb;
 
-            emulator_execute(&emulator);
+            emulator(&processor, memory);
+            emulator_execute(&processor);
 
             if (memory[0] == 19690720)
             {
@@ -41,9 +39,9 @@ static Word scan(Word image[], int length)
 
 int main(void)
 {
-    Word memory[MEMORY];
+    Word image[MEMORY];
     clock_t start = clock();
-    Word product = scan(memory, parser_parse(stdin, memory));
+    Word product = scan(image, parser_parse(stdin, image));
 
     printf(
         "02b " WORD_FORMAT " %lf\n",

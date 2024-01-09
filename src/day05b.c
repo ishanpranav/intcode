@@ -10,34 +10,19 @@
 #include "../lib/parser.h"
 #define MEMORY 4096
 
-static Word result;
-
-static Word emulator_on_input()
-{
-    return 5;
-}
-
-static void emulator_on_output(Word value)
-{
-    result = value;
-}
-
 int main()
 {
     Word memory[MEMORY];
-    struct Emulator emulator =
-    {
-        .input = emulator_on_input,
-        .ouput = emulator_on_output,
-        .memory = memory
-    };
+    struct Emulator processor;
     clock_t start = clock();
 
     parser_parse(stdin, memory);
-    emulator_execute(&emulator);
+    emulator(&processor, memory);
+    emulator_input(&processor, 5);
+    emulator_execute(&processor);
     printf(
         "05b " WORD_FORMAT " %lf\n",
-        result,
+        processor.outputs[processor.outputCount - 1],
         (double)(clock() - start) / CLOCKS_PER_SEC);
 
     return 0;
