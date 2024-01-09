@@ -8,21 +8,27 @@
 #include <time.h>
 #include "../lib/emulator.h"
 #include "../lib/parser.h"
-#define MEMORY 100000
+#define INPUTS 1
+#define MEMORY 4096
+#define OUTPUTS 8
 
 int main()
 {
+    Word inputs[INPUTS];
     Word memory[MEMORY];
+    Word outputs[OUTPUTS];
     struct Emulator processor;
     clock_t start = clock();
 
     parser_parse(stdin, memory);
     emulator(&processor, memory);
-    emulator_input(&processor, 1);
+    queue(&processor.inputs, inputs, INPUTS);
+    queue(&processor.outputs, outputs, OUTPUTS);
+    queue_enqueue(&processor.inputs, 1);
     emulator_execute(&processor);
     printf(
         "05a " WORD_FORMAT " %lf\n",
-        processor.outputs[processor.outputCount - 1],
+        processor.outputs.items[processor.outputs.last],
         (double)(clock() - start) / CLOCKS_PER_SEC);
 
     return 0;

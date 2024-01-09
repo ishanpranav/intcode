@@ -1,2 +1,3 @@
 *.txt text eol=lf
-*.csv linguist-detectable
+*.csv text eol=lf linguist-detectable
+*.sh text eol=lf

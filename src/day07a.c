@@ -10,7 +10,9 @@
 #include <time.h>
 #include "../lib/emulator.h"
 #include "../lib/parser.h"
+#define INPUTS 2
 #define MEMORY 4096
+#define OUTPUTS 100
 
 struct PermutationIterator
 {
@@ -74,6 +76,8 @@ int main()
     Word max = 0;
     Word programMemory[MEMORY];
     Word sharedMemory[5][MEMORY];
+    Word inputs[5][INPUTS];
+    Word outputs[5][OUTPUTS];
     struct PermutationIterator iter;
     struct Emulator amplifiers[5];
     int set[] = { 0, 1, 2, 3, 4 };
@@ -86,17 +90,19 @@ int main()
         {
             memcpy(sharedMemory[i], programMemory, length * sizeof(Word));
             emulator(amplifiers + i, sharedMemory[i]);
+            queue(&amplifiers[i].inputs, inputs[i], INPUTS);
+            queue(&amplifiers[i].outputs, outputs[i], OUTPUTS);
         }
 
         Word output = 0;
 
         for (int i = 0; i < 5; i++)
         {
-            emulator_input(amplifiers + i, set[i]);
-            emulator_input(amplifiers + i, output);
+            queue_enqueue(&amplifiers[i].inputs, set[i]);
+            queue_enqueue(&amplifiers[i].inputs, output);
             emulator_execute(amplifiers + i);
 
-            output = amplifiers[i].outputs[0];
+            output = amplifiers[i].outputs.items[amplifiers[i].outputs.first];
         }
 
         if (output > max)
@@ -106,7 +112,7 @@ int main()
     }
 
     printf(
-        "05b " WORD_FORMAT " %lf\n",
+        "07a " WORD_FORMAT " %lf\n",
         max,
         (double)(clock() - start) / CLOCKS_PER_SEC);
 

@@ -4,25 +4,32 @@
 
 #include <stdbool.h>
 #include "word.h"
-#define EMULATOR_INPUTS_CAPACITY 2
-#define EMULATOR_OUTPUTS_CAPACITY 1
+
+struct Queue
+{
+    long* items;
+    int first;
+    int last;
+    int capacity;
+};
 
 struct Emulator
 {
     long* memory;
 
-    long (*input)(struct Emulator* instance);
+    bool (*input)(struct Emulator* instance, long* result);
     void (*output)(struct Emulator* instance, long value);
 
-    long inputs[EMULATOR_INPUTS_CAPACITY];
-    long outputs[EMULATOR_OUTPUTS_CAPACITY];
-    int firstInput;
-    int lastInput;
-    int outputCount;
+    struct Queue inputs;
+    struct Queue outputs;
 };
 
 typedef struct Emulator* Emulator;
+typedef struct Queue* Queue;
 
 void emulator(Emulator instance, Word memory[]);
-void emulator_input(Emulator instance, Word value);
 void emulator_execute(Emulator instance);
+
+void queue(Queue instance, Word buffer[], int capacity);
+void queue_enqueue(Queue instance, Word item);
+bool queue_try_dequeue(Queue instance, Word* result);
