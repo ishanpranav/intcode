@@ -4,7 +4,6 @@
 
 // 1202 Program Alarm Part 2
 
-#include <stdio.h>
 #include <string.h>
 #include <time.h>
 #include "../lib/emulator.h"

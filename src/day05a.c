@@ -4,14 +4,13 @@
 
 // Sunny with a Chance of Asteroids Part 1
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include "../lib/emulator.h"
 #include "../lib/parser.h"
 #define MEMORY 100000
 
-Word result;
+static Word result;
 
 static Word emulator_on_input()
 {

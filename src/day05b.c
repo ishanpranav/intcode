@@ -4,14 +4,13 @@
 
 // Sunny with a Chance of Asteroids Part 2
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include "../lib/emulator.h"
 #include "../lib/parser.h"
 #define MEMORY 4096
 
-Word result;
+static Word result;
 
 static Word emulator_on_input()
 {
@@ -28,9 +27,9 @@ int main()
     Word memory[MEMORY];
     struct Emulator emulator =
     {
-        .memory = memory,
         .input = emulator_on_input,
-        .ouput = emulator_on_output
+        .ouput = emulator_on_output,
+        .memory = memory
     };
     clock_t start = clock();
 

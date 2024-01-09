@@ -1,14 +1,12 @@
 CC = gcc
 CFLAGS = -O3 -pedantic -std=c99 -Wall -Wextra
 LIBM = -lm
-TWOS_COMPLEMENT = -fno-strict-overflow -fwrapv
 
 all: \
 	emulate \
 	intcode \
 	day02a day02b \
 	day05a day05b \
-	day06a day06b \
 	day07a day07b \
 	day08a day08b \
 	day09a day09b \
@@ -34,10 +32,10 @@ emulator: lib/emulator.h lib/emulator.c
 parser: lib/parser.h lib/parser.c
 	$(CC) $(CFLAGS) -c lib/parser.c -o parser.o
 	
-emulate: test/emulate.c emulator parser
+emulate: tools/emulate.c emulator parser
 	$(CC) $(CFLAGS) $< -o emulate.o emulator.o parser.o
 
-intcode: test/intcode.c emulator parser
+intcode: tools/intcode.c emulator parser
 	$(CC) $(CFLAGS) $< -o intcode.o emulator.o parser.o
 
 day02a: src/day02a.c emulator parser
@@ -50,16 +48,10 @@ day05a: src/day05a.c emulator parser
 	$(CC) $(CFLAGS) $< -o $@.o emulator.o parser.o
 	
 day05b: src/day05b.c emulator parser
-	$(CC) $(CFLAGS) $< -o $@.o  emulator.o parser.o
+	$(CC) $(CFLAGS) $< -o $@.o emulator.o parser.o
 	
-day06a: src/day06a.c
-	$(CC) $(CFLAGS) $< -o $@.o $(LIBM)
-	
-day06b: src/day06b.c
-	$(CC) $(CFLAGS) $< -o $@.o $(LIBM)
-	
-day07a: src/day07a.c
-	$(CC) $(CFLAGS) $< -o $@.o
+day07a: src/day07a.c emulator parser
+	$(CC) $(CFLAGS) $< -o $@.o emulator.o parser.o
 	
 day07b: src/day07b.c
 	$(CC) $(CFLAGS) $< -o $@.o
