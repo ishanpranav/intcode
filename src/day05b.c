@@ -1,3 +1,5 @@
+// Author: Ishan Pranav
+// Copyright (c) 2023 Ishan Pranav
 // Licensed under the MIT license.
 
 // Sunny with a Chance of Asteroids Part 2

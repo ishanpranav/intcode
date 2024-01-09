@@ -1,3 +1,7 @@
+// Author: Ishan Pranav
+// Copyright (c) 2023 Ishan Pranav
+// Licensed under the MIT license.
+
 #include "parser.h"
 
 int parser_parse(FILE* stream, Word memory[])
