@@ -37,6 +37,10 @@ static Word scan(Word clean[], int length)
 int main(void)
 {
     Word memory[MEMORY];
+    struct Emulator emulator =
+    {
+        .memory = memory
+    };
     clock_t start = clock();
     Word product = scan(memory, parser_parse(stdin, memory));
 

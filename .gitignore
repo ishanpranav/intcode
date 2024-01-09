@@ -1,5 +1,5 @@
 a.out
-a.csv
+[0-9].csv
 *.exe
 *.o
 .vscode/

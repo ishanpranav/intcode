@@ -11,6 +11,10 @@
 int main(void)
 {
     Word memory[MEMORY];
+    struct Emulator emulator =
+    {
+        .memory = memory
+    };
     clock_t start = clock();
 
     parser_parse(stdin, memory);
@@ -18,7 +22,7 @@ int main(void)
     memory[1] = 12;
     memory[2] = 2;
 
-    emulator_execute(memory);
+    emulator_execute(&emulator);
     printf(
         "02a " WORD_FORMAT " %lf\n",
         memory[0],

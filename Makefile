@@ -6,8 +6,6 @@ TWOS_COMPLEMENT = -fno-strict-overflow -fwrapv
 
 all: \
 	day02a day02b \
-	day03a day03b \
-	day04a day04b \
 	day05a day05b \
 	day06a day06b \
 	day07a day07b \
@@ -44,20 +42,8 @@ day02a: src/day02a.c emulator parser
 day02b: src/day02b.c emulator parser
 	$(CC) $(CFLAGS) $< -o $@.o emulator.o parser.o
 	
-day03a: src/day03a.c
-	$(CC) $(CFLAGS) $< -o $@.o
-	
-day03b: src/day03b.c
-	$(CC) $(CFLAGS) $< -o $@.o
-	
-day04a: src/day04a.c
-	$(CC) $(CFLAGS) $< -o $@.o
-	
-day04b: src/day04b.c
-	$(CC) $(CFLAGS) $< -o $@.o
-	
-day05a: src/day05a.c
-	$(CC) $(CFLAGS) $< -o $@.o
+day05a: src/day05a.c emulator parser
+	$(CC) $(CFLAGS) $< -o $@.o emulator.o parser.o
 	
 day05b: src/day05b.c
 	$(CC) $(CFLAGS) $(TWOS_COMPLEMENT) $< -o $@.o
