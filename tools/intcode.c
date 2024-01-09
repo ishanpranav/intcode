@@ -5,14 +5,12 @@
 
 bool emulator_on_input(Emulator instance, Word* result)
 {
-    printf(">> ");
-
     return scanf(WORD_FORMAT, result) == 1;
 }
 
 void emulator_on_output(Emulator instance, Word value)
 {
-    printf("> " WORD_FORMAT "\n", value);
+    printf(WORD_FORMAT " ", value);
 }
 
 int main(int count, ZString args[])
@@ -47,11 +45,11 @@ int main(int count, ZString args[])
     emulator(&processor, memory);
 
     processor.input = emulator_on_input;
-    processor.output = emulator_on_output;;
+    processor.output = emulator_on_output;
 
     emulator_execute(&processor);
     free(memory);
-    printf("Ok.\n");
+    printf(": Ok.\n");
 
     return 0;
 }

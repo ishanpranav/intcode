@@ -11,8 +11,8 @@ complexity and running time. This repository only includes solutions to the
 These programs are cross-platform, having been tested on Windows and Linux
 operating systems.
 
-**Important:** Use the `MEMORY` macro to ensure that enough memory has been
-allocated.
+**Important:** Use the `MEMORY`, `INPUTS`, and `OUTPUTS` macro to ensure that
+the program does not run out of memory and invoke undefined behavior.
 
 ## Constraints
 

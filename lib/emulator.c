@@ -6,6 +6,13 @@
 #include <string.h>
 #include "emulator.h"
 
+enum Mode
+{
+    MODE_REFERENCE = 0,
+    MODE_VALUE = 1,
+    MODE_OFFSET = 2
+};
+
 enum Opcode
 {
     OPCODE_ADD = 1,
@@ -16,10 +23,19 @@ enum Opcode
     OPCODE_JUMP_IF_FALSE = 6,
     OPCODE_LESS_THAN = 7,
     OPCODE_EQUALS = 8,
+    OPCODE_OFFSET = 9,
     OPCODE_TERMINATE = 99
 };
 
+enum Slot
+{
+    SLOT_FIRST = 100,
+    SLOT_SECOND = 1000,
+    SLOT_THIRD = 10000
+};
+
 typedef enum Opcode Opcode;
+typedef enum Slot Slot;
 
 static bool emulator_on_input(Emulator instance, Word* result)
 {
@@ -35,6 +51,7 @@ void emulator(Emulator instance, Word memory[])
 {
     instance->memory = memory;
     instance->instruction = instance->memory;
+    instance->offset = 0;
     instance->input = emulator_on_input;
     instance->output = emulator_on_output;
 
@@ -42,28 +59,23 @@ void emulator(Emulator instance, Word memory[])
     queue(&instance->outputs, NULL, 0);
 }
 
-static void emulator_move(Emulator instance, Word result, int slot)
+static Word* emulator_address(Emulator instance, int index, Slot slot)
 {
-    instance->memory[instance->instruction[slot]] = result;
-}
+    Word value = instance->instruction[index];
 
-static Word emulator_load(Emulator instance, int slot)
-{
-    int denominator = 100;
-
-    for (int i = 0; i < slot - 1; i++)
+    switch ((*instance->instruction / slot) % 10)
     {
-        denominator *= 10;
+        case MODE_REFERENCE: return instance->memory + value;
+
+        case MODE_VALUE:
+            instance->scratchRegister = value;
+
+            return &instance->scratchRegister;
+
+        case MODE_OFFSET: return instance->memory + instance->offset + value;
     }
 
-    Word value = instance->instruction[slot];
-
-    if ((*instance->instruction / denominator) % 10 == 0)
-    {
-        return instance->memory[value];
-    }
-
-    return value;
+    return NULL;
 }
 
 bool emulator_execute(Emulator instance)
@@ -76,10 +88,10 @@ bool emulator_execute(Emulator instance)
         {
             case OPCODE_ADD:
             {
-                Word a = emulator_load(instance, 1);
-                Word b = emulator_load(instance, 2);
+                Word a = *emulator_address(instance, 1, SLOT_FIRST);
+                Word b = *emulator_address(instance, 2, SLOT_SECOND);
 
-                emulator_move(instance, a + b, 3);
+                *emulator_address(instance, 3, SLOT_THIRD) = a + b;
 
                 instance->instruction += 4;
             }
@@ -87,10 +99,10 @@ bool emulator_execute(Emulator instance)
 
             case OPCODE_MULTIPLY:
             {
-                Word a = emulator_load(instance, 1);
-                Word b = emulator_load(instance, 2);
+                Word a = *emulator_address(instance, 1, SLOT_FIRST);
+                Word b = *emulator_address(instance, 2, SLOT_SECOND);
 
-                emulator_move(instance, a * b, 3);
+                *emulator_address(instance, 3, SLOT_THIRD) = a * b;
 
                 instance->instruction += 4;
             }
@@ -99,13 +111,13 @@ bool emulator_execute(Emulator instance)
             case OPCODE_INPUT:
             {
                 Word input;
-                
+
                 if (!instance->input(instance, &input))
                 {
                     return false;
                 }
-                
-                emulator_move(instance, input, 1);
+
+                *emulator_address(instance, 1, SLOT_FIRST) = input;
 
                 instance->instruction += 2;
             }
@@ -113,7 +125,7 @@ bool emulator_execute(Emulator instance)
 
             case OPCODE_OUTPUT:
             {
-                Word output = emulator_load(instance, 1);
+                Word output = *emulator_address(instance, 1, SLOT_FIRST);
 
                 instance->output(instance, output);
                 instance->instruction += 2;
@@ -121,9 +133,9 @@ bool emulator_execute(Emulator instance)
             break;
 
             case OPCODE_JUMP_IF_TRUE:
-                if (emulator_load(instance, 1))
+                if (*emulator_address(instance, 1, SLOT_FIRST))
                 {
-                    Word label = emulator_load(instance, 2);
+                    Word label = *emulator_address(instance, 2, SLOT_SECOND);
 
                     instance->instruction = instance->memory + label;
 
@@ -134,9 +146,9 @@ bool emulator_execute(Emulator instance)
                 break;
 
             case OPCODE_JUMP_IF_FALSE:
-                if (!emulator_load(instance, 1))
+                if (!*emulator_address(instance, 1, SLOT_FIRST))
                 {
-                    Word label = emulator_load(instance, 2);
+                    Word label = *emulator_address(instance, 2, SLOT_SECOND);
 
                     instance->instruction = instance->memory + label;
 
@@ -148,10 +160,10 @@ bool emulator_execute(Emulator instance)
 
             case OPCODE_LESS_THAN:
             {
-                Word a = emulator_load(instance, 1);
-                Word b = emulator_load(instance, 2);
+                Word left = *emulator_address(instance, 1, SLOT_FIRST);
+                Word right = *emulator_address(instance, 2, SLOT_SECOND);
 
-                emulator_move(instance, a < b, 3);
+                *emulator_address(instance, 3, SLOT_THIRD) = left < right;
 
                 instance->instruction += 4;
             }
@@ -159,14 +171,19 @@ bool emulator_execute(Emulator instance)
 
             case OPCODE_EQUALS:
             {
-                Word a = emulator_load(instance, 1);
-                Word b = emulator_load(instance, 2);
+                Word left = *emulator_address(instance, 1, SLOT_FIRST);
+                Word right = *emulator_address(instance, 2, SLOT_SECOND);
 
-                emulator_move(instance, a == b, 3);
+                *emulator_address(instance, 3, SLOT_THIRD) = left == right;
 
                 instance->instruction += 4;
             }
             break;
+
+            case OPCODE_OFFSET:
+                instance->offset += *emulator_address(instance, 1, SLOT_FIRST);
+                instance->instruction += 2;
+                break;
 
             case OPCODE_TERMINATE: return true;
         }
@@ -176,6 +193,7 @@ bool emulator_execute(Emulator instance)
 void emulator_reimage(Emulator instance, Word image[], int imageSize)
 {
     instance->instruction = instance->memory;
+    instance->offset = 0;
 
     memcpy(instance->memory, image, imageSize * sizeof(Word));
     queue_clear(&instance->inputs);

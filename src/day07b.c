@@ -12,7 +12,7 @@
 #define EMULATOR_QUEUE_CAPACITY 5
 #define INPUTS 2
 #define MEMORY 4096
-#define OUTPUTS 100
+#define OUTPUTS 1
 
 struct EmulatorQueue
 {

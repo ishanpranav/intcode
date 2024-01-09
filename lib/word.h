@@ -4,8 +4,8 @@
 
 #ifndef INTCODE_WORD_H
 #define INTCODE_WORD_H
-#define WORD_FORMAT "%ld"
+#define WORD_FORMAT "%lld"
 
-typedef long Word;
+typedef long long Word;
 
 #endif

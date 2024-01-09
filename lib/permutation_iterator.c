@@ -4,7 +4,7 @@
 
 #include "permutation_iterator.h"
 
-static void swap(int* p, int* q)
+static void permutation_iterator_swap(int* p, int* q)
 {
     int swap = *p;
 
@@ -38,14 +38,16 @@ void permutation_next(PermutationIterator iterator)
             index--;
         }
 
-        swap(iterator->values + last - 1, iterator->values + index);
+        permutation_iterator_swap(
+            iterator->values + last - 1, 
+            iterator->values + index);
     }
 
     int max = (iterator->length - last) / 2;
 
     for (int index = 0; index < max; index++)
     {
-        swap(
+        permutation_iterator_swap(
             iterator->values + last + index,
             iterator->values + iterator->length - 1 - index);
     }

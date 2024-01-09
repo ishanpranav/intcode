@@ -7,7 +7,7 @@
 
 struct Queue
 {
-    long* items;
+    long long* items;
     int first;
     int last;
     int capacity;
@@ -15,14 +15,16 @@ struct Queue
 
 struct Emulator
 {
-    long* memory;
-    long* instruction;
+    long long* memory;
+    long long* instruction;
+    long long scratchRegister;
 
-    bool (*input)(struct Emulator* instance, long* result);
-    void (*output)(struct Emulator* instance, long value);
+    bool (*input)(struct Emulator* instance, long long* result);
+    void (*output)(struct Emulator* instance, long long value);
 
     struct Queue inputs;
     struct Queue outputs;
+    int offset;
 };
 
 typedef struct Emulator* Emulator;
