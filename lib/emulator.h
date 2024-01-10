@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 
 #include <stdbool.h>
+#include "export.h"
 #include "word.h"
 
 struct Queue

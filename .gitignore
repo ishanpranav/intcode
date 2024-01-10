@@ -1,7 +1,13 @@
 a.out
 alt*.csv
-*.exe
-*.o
+.vs/
 .vscode/
-.antlr/
 *.bmp
+*.dll
+*.exe
+*.exp
+*.lib
+*.o
+*.obj
+bin/
+obj/

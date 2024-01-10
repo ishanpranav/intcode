@@ -14,6 +14,12 @@
 
 int main(void)
 {
+    Word x;
+    Word y;
+    Word tile;
+    Word ball = 0;
+    Word paddle = 0;
+    Word score = 0;
     Word memory[MEMORY];
     Word outputs[OUTPUTS];
     Word inputs[INPUTS];
@@ -25,13 +31,6 @@ int main(void)
     queue(&arcadeCabinet.outputs, outputs, OUTPUTS);
 
     memory[0] = 2;
-
-    Word x;
-    Word y;
-    Word tile;
-    Word ball = 0;
-    Word paddle = 0;
-    Word score = 0;
 
     while (emulator_execute(&arcadeCabinet))
     {
@@ -70,7 +69,7 @@ int main(void)
         }
     }
 
-    printf("13b %lld\n", score);
+    printf("13b " WORD_FORMAT "\n", score);
 
     return 0;
 }
