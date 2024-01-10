@@ -4,3 +4,4 @@ alt*.csv
 *.o
 .vscode/
 .antlr/
+*.bmp
