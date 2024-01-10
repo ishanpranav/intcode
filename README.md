@@ -32,5 +32,5 @@ I am working within the following constraints to ensure high code quality.
 ## Attribution
 
 This repository redistributes
-[cbraudo/qdbmp](https://github.com/cbraudo/qdbmp/tree/master) (Quick \' Dirty
+[cbraudo/qdbmp](https://github.com/cbraudo/qdbmp/tree/master) (Quick n\' Dirty
 BMP Library) by Chai Braudo. This component is required for Day 11(b) and is distributed under the MIT license.
