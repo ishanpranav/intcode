@@ -4,7 +4,6 @@
 
 // Amplification Circuit Part 1
 
-#include <string.h>
 #include "../lib/emulator.h"
 #include "../lib/parser.h"
 #include "../lib/permutation_iterator.h"
@@ -12,7 +11,7 @@
 #define MEMORY 4096
 #define OUTPUTS 1
 
-int main()
+int main(void)
 {
     Word max = 0;
     Word image[MEMORY];

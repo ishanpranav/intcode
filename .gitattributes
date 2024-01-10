@@ -1,3 +1,4 @@
 *.txt text eol=lf
 *.csv text eol=lf linguist-detectable
 *.sh text eol=lf
+include/** linguist-vendored

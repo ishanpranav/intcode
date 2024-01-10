@@ -4,8 +4,6 @@
 
 // Amplification Circuit Part 2
 
-#include <string.h>
-#include <time.h>
 #include "../lib/emulator.h"
 #include "../lib/parser.h"
 #include "../lib/permutation_iterator.h"
@@ -74,7 +72,7 @@ Emulator emulator_queue_dequeue(EmulatorQueue instance)
     return result;
 }
 
-int main()
+int main(void)
 {
     Word max = 0;
     Word image[MEMORY];
@@ -112,7 +110,7 @@ int main()
         {
             queue_enqueue(&current->inputs, output);
             
-            if (!emulator_execute(current))
+            if (emulator_execute(current))
             {
                 emulator_queue_enqueue(&queue, current);
             }

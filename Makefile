@@ -7,8 +7,6 @@ all: \
 	intcode \
 	day02a day02b \
 	day07a day07b \
-	day09b \
-	day10a \
 	day11a day11b \
 	day12a day12b \
 	day13a day13b \
@@ -34,10 +32,16 @@ emulate: tools/emulate.c emulator parser
 	$(CC) $(CFLAGS) $< -o emulate.o emulator.o parser.o
 
 intcode: tools/intcode.c emulator parser
-	$(CC) $(CFLAGS) $< -o intcode.o emulator.o parser.o
+	$(CC) $(CFLAGS) $< -o intcode.o emulator.o parser.o -Wno-unused-parameter
 
 permutation_iterator: lib/permutation_iterator.h lib/permutation_iterator.c
 	$(CC) $(CFLAGS) -c lib/permutation_iterator.c -o permutation_iterator.o
+
+qdbmp: include/qdbmp.h include/qdbmp.c -Wno-type-limits
+	$(CC) $(CFLAGS) -c include/qdbmp.c -o qdbmp.o
+
+bitmap: lib/bitmap.h lib/bitmap.c qdbmp
+	$(CC) $(CFLAGS) -c lib/bitmap.c -o bitmap.o
 
 day02a: src/day02a.c emulator parser
 	$(CC) $(CFLAGS) $< -o $@.o emulator.o parser.o
@@ -51,17 +55,11 @@ day07a: src/day07a.c emulator parser permutation_iterator
 day07b: src/day07b.c emulator parser permutation_iterator
 	$(CC) $(CFLAGS) $< -o $@.o emulator.o parser.o permutation_iterator.o
 	
-day09b: src/day09b.c
-	$(CC) $(CFLAGS) $< -o $@.o $(LIBM)
+day11a: src/day11a.c emulator parser
+	$(CC) $(CFLAGS) $< -o $@.o emulator.o parser.o
 	
-day10a: src/day10a.c
-	$(CC) $(CFLAGS) $< -o $@.o
-
-day11a: src/day11a.c
-	$(CC) $(CFLAGS) $< -o $@.o
-	
-day11b: src/day11b.c
-	$(CC) $(CFLAGS) $< -o $@.o
+day11b: src/day11b.c emulator parser bitmap
+	$(CC) $(CFLAGS) $< -o $@.o emulator.o parser.o qdbmp.o bitmap.o
 	
 day12a: src/day12a.c
 	$(CC) $(CFLAGS) $< -o $@.o

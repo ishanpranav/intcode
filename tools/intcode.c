@@ -3,12 +3,12 @@
 #include "../lib/emulator.h"
 #define MEMORY 1048576
 
-bool emulator_on_input(Emulator instance, Word* result)
+static bool emulator_on_input(Emulator instance, Word* result)
 {
     return scanf(WORD_FORMAT, result) == 1;
 }
 
-void emulator_on_output(Emulator instance, Word value)
+static void emulator_on_output(Emulator instance, Word value)
 {
     printf(WORD_FORMAT " ", value);
 }

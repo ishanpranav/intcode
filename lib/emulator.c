@@ -114,7 +114,7 @@ bool emulator_execute(Emulator instance)
 
                 if (!instance->input(instance, &input))
                 {
-                    return false;
+                    return true;
                 }
 
                 *emulator_address(instance, 1, SLOT_FIRST) = input;
@@ -185,7 +185,7 @@ bool emulator_execute(Emulator instance)
                 instance->instruction += 2;
                 break;
 
-            case OPCODE_TERMINATE: return true;
+            case OPCODE_TERMINATE: return false;
         }
     }
 }
