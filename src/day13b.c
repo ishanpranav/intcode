@@ -4,7 +4,6 @@
 
 // Care Package Part 2
 
-#include <math.h>
 #include "../lib/emulator.h"
 #include "../lib/parser.h"
 #include "day13.h"
