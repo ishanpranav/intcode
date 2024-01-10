@@ -4,25 +4,15 @@
 
 // Care Package Part 1
 
-#include <stdlib.h>
 #include "../lib/emulator.h"
 #include "../lib/parser.h"
+#include "day13.h"
 #define MEMORY 8192
 #define OUTPUTS 4096
 
-enum Tile
-{
-    TILE_EMPTY = 0,
-    TILE_WALL = 1,
-    TILE_BLOCK = 2,
-    TILE_HORIZONTAL_PADDLE = 3,
-    TILE_BALL = 4
-};
-
-typedef enum Tile Tile;
-
 int main(void)
 {
+    Word tile;
     int total = 0;
     Word memory[MEMORY];
     Word outputs[OUTPUTS];
@@ -32,8 +22,6 @@ int main(void)
     emulator(&arcadeCabinet, memory);
     queue(&arcadeCabinet.outputs, outputs, OUTPUTS);
     emulator_execute(&arcadeCabinet);
-
-    Word tile;
 
     while (queue_try_dequeue(&arcadeCabinet.outputs, &tile))
     {

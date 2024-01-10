@@ -21,6 +21,7 @@ int main(void)
     }
 
     day11_robot(matrix, true);
+    
     Bitmap image =  bitmap(DIMENSION, DIMENSION);
 
     for (int x = 0; x < DIMENSION; x++)

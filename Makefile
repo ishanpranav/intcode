@@ -63,8 +63,8 @@ day11b: src/day11b.c emulator parser bitmap
 day13a: src/day13a.c emulator parser 
 	$(CC) $(CFLAGS) $< -o $@.o emulator.o parser.o
 	
-day13b: src/day13b.c
-	$(CC) $(CFLAGS) $< -o $@.o
+day13b: src/day13b.c emulator parser
+	$(CC) $(CFLAGS) $< -o $@.o emulator.o parser.o
 	
 day14a: src/day14a.c
 	$(CC) $(CFLAGS) $< -o $@.o
